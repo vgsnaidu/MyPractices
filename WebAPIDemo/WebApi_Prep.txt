@@ -1,0 +1,118 @@
+5:16 PM 12/1/2018
+=====================================
+The ASP.NET Web API is an extensible framework for building HTTP based services that can be accessed in different applications on different platforms such as web, windows, mobile etc. It works more or less the same way as ASP.NET MVC web application except that it sends data as a response instead of html view
+ASP.NET Web API Characteristics ::
+ASP.NET Web API is an ideal platform for building RESTful services.
+ASP.NET Web API is built on top of ASP.NET and supports ASP.NET request/response pipeline
+ASP.NET Web API maps HTTP verbs to method names.
+ASP.NET Web API supports different formats of response data. Built-in support for JSON, XML, BSON format.
+ASP.NET Web API can be hosted in IIS, Self-hosted or other web server that supports .NET 4.0+.
+ASP.NET Web API framework includes new HttpClient to communicate with Web API server. HttpClient can be used in ASP.MVC server side, Windows Form application, Console application or other apps.
+------------------------
+Web API	
+Open source and ships with .NET framework.	
+Supports only HTTP protocol.	
+Maps http verbs to methods	Uses attributes based programming model.
+Uses routing and controller concept similar to ASP.NET MVC.	
+Does not support Reliable Messaging and transaction.	
+Web API can be configured using HttpConfiguration class but not in web.config.	
+Ideal for building RESTful services.	
+WCF..
+Ships with .NET framework
+Ships with .NET framework
+Supports HTTP, TCP, UDP and custom transport protocol.
+Uses Service, Operation and Data contracts. 
+Supports Reliable Messaging and Transactions.
+Uses web.config and attributes to configure a service.
+Supports RESTful services but with limitations.
+
+
+When to choose WCF?
+Choose WCF if you use .NET Framework 3.5. Web API does not support .NET 3.5 or below.
+Choose WCF if your service needs to support multiple protocols such as HTTP, TCP, Named pipe.
+Choose WCF if you want to build service with WS-* standards like Reliable Messaging, Transactions, Message Security.
+Choose WCF if you want to use Request-Reply, One Way, and Duplex message exchange patterns.
+When to choose ASP.NET Web API?
+Choose Web API if you are using .NET framework 4.0 or above.
+Choose Web API if you want to build a service that supports only HTTP protocol.
+Choose Web API to build RESTful HTTP based services.
+Choose Web API if you are familiar with ASP.NET MVC.
+Let's begin by creating a simple ASP.NET Web API project using Visual Studio in the next section.
+---------------------------------
+add a new class in the configuration folder and name it "HelloWebAPIConfig" with following content. (You may give any appropriate name)
+ public static class HelloWebAPIConfig
+    {
+        public static void Register(HttpConfiguration config)
+        {
+            // Web API routes
+            config.MapHttpAttributeRoutes();
+
+            config.Routes.MapHttpRoute(
+                name: "DefaultApi",
+                routeTemplate: "api/{controller}/{id}",
+                defaults: new { id = RouteParameter.Optional }
+            );
+        }
+    }
+
+	Now, add Global.asax by right clicking on the project -> select Add -> click New Item.. to open Add New Item popup as below. Select Global Application Class and click OK.
+	his will add Global.asax file into the project. We need to configure our Web API routes when application starts. So call HelloWebAPIConfig.Register() method in the Application_Start event in the Global.asax as shown below.
+	public class Global : System.Web.HttpApplication
+{
+    protected void Application_Start(object sender, EventArgs e)
+    {
+        GlobalConfiguration.Configure(HelloWebAPIConfig.Register);
+    }
+}
+Web API is configured only using code based configuration using GlobalConfiguration class. The Configure() method requires a callback method where you have configured your Web API.
+Based on the incoming request URL and HTTP verb (GET/POST/PUT/PATCH/DELETE), Web API decides which Web API controller and action method to execute e.g. Get() method will handle HTTP GET request, Post() method will handle HTTP POST request, Put() mehtod will handle HTTP PUT request and Delete() method will handle HTTP DELETE request for the above Web API
+If you want to write methods that do not start with an HTTP verb then you can apply the appropriate http verb attribute on the method such as HttpGet, HttpPost, HttpPut etc. same as MVC controller.
+ [HttpGet]
+        public string Value(int id)
+        {
+            return "value";
+        }
+
+        [HttpPost]
+        public void SaveNewValue([FromBody]string value)
+        {
+        }
+
+        [HttpPut]
+        public void UpdateValue(int id, [FromBody]string value)
+        {
+        }
+
+        [HttpDelete]
+        public void RemoveValue(int id)
+        {
+        }
+Web API Controller Characteristics
+It must be derived from System.Web.Http.ApiController class.
+It can be created under any folder in the project's root folder. However, it is recommended to create controller classes in the Controllers folder as per the convention.
+Action method name can be the same as HTTP verb name or it can start with HTTP verb with any suffix (case in-sensitive) or you can apply Http verb attributes to method.
+Return type of an action method can be any primitive or complex type. Learn more about it here.
+
+
+Configure Web API
+Web API supports code based configuration. It cannot be configured in web.config file. We can configure Web API to customize the behaviour of Web API hosting infrastructure and components such as routes, formatters, filters, DependencyResolver, MessageHandlers, ParamterBindingRules, properties, services etc.
+
+Web API configuration process starts when the application starts. It calls GlobalConfiguration.Configure(WebApiConfig.Register) in the Application_Start method. The Configure() method requires the callback method where Web API has been configured in code. By default this is the static WebApiConfig.Register() method.
+
+WebApiConfig.Register() method includes a parameter of HttpConfiguration type which is then used to configure the Web API. The HttpConfiguration is the main class which includes following properties using which you can override the default behaviour of Web API
+
+Property	Description
+DependencyResolver	=Gets or sets the dependency resolver for dependency injection.
+Filters=	Gets or sets the filters.
+Formatters=	Gets or sets the media-type formatters.
+IncludeErrorDetailPolicy=	Gets or sets a value indicating whether error details should be included in error messages.
+MessageHandlers=	Gets or sets the message handlers.
+ParameterBindingRules=	Gets the collection of rules for how parameters should be bound.
+Properties	=Gets the properties associated with this Web API instance.
+Routes	=Gets the collection of routes configured for the Web API.
+Services=	Gets the Web API services.
+
+
+
+
+
