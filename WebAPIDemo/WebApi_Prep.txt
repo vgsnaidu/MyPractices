@@ -111,6 +111,94 @@ ParameterBindingRules=	Gets the collection of rules for how parameters should be
 Properties	=Gets the properties associated with this Web API instance.
 Routes	=Gets the collection of routes configured for the Web API.
 Services=	Gets the Web API services.
+-----------------------------------------
+
+Web API routing is similar to ASP.NET MVC Routing. It routes an incoming HTTP request to a particular action method on a Web API controller.
+
+Web API supports two types of routing:
+
+Convention-based Routing
+Attribute Routing
+=======
+
+Convention-based Routing
+In the convention-based routing, Web API uses route templates to determine which controller and action method to execute. At least one route template must be added into route table in order to handle various HTTP requests.
+
+When we created Web API project using WebAPI template in the Create Web API Project section, it also added WebApiConfig class in the App_Start folder with default route as shown below
+public static class WebApiConfig
+{
+    public static void Register(HttpConfiguration config)
+    {
+        // Enable attribute routing
+        config.MapHttpAttributeRoutes();
+        
+        // Add default route using convention-based routing
+        config.Routes.MapHttpRoute(
+            name: "DefaultApi",
+            routeTemplate: "api/{controller}/{id}",
+            defaults: new { id = RouteParameter.Optional }
+        );
+    }
+}
+
+The config.Routes is a route table or route collection of type HttpRouteCollection. The "DefaultApi" route is added in the route table using MapHttpRoute() extension method. The MapHttpRoute() extension method internally creates a new instance of IHttpRoute and adds it to an HttpRouteCollection. However, you can create a new route and add it into a collection manually as shown below.
+public static class WebApiConfig
+{
+    public static void Register(HttpConfiguration config)
+    {
+        config.MapHttpAttributeRoutes();
+        
+        // define route
+        IHttpRoute defaultRoute = config.Routes.CreateRoute("api/{controller}/{id}", 
+                                            new { id = RouteParameter.Optional }, null);
+            
+        // Add route
+        config.Routes.Add("DefaultApi", defaultRoute);
+
+    }
+}
+The following table lists parameters of MapHttpRoute() method.
+
+Parameter	Description
+name	Name of the route
+routeTemplate	URL pattern of the route
+defaults	An object parameter that includes default route values
+constraints	Regex expression to specify characteristic of route values
+handler	The handler to which the request will be dispatched.
+============
+Attribute Routing
+Attribute routing is supported in Web API 2. As the name implies, attribute routing uses [Route()] attribute to define routes. The Route attribute can be applied on any controller or action method.
+
+In order to use attribute routing with Web API, it must be enabled in WebApiConfig by calling config.MapHttpAttributeRoutes() method.
+
+Consider the following example of attribute routing.
+public class StudentController : ApiController
+{
+    [Route("api/student/names")]
+                public IEnumerable<string> Get()
+    {
+                return new string[] { "student1", "student2" };
+    }
+}
+--------------------------------
+Parameter Binding::
+Web API binds HTTP request data to the parameters of an action method.
+Action methods in Web API controller can have one or more parameters of different types.
+It can be either primitive type or complex type.
+Web API binds action method parameters either with URL's query string or with request body depending on the parameter type. 
+By default, if parameter type is of .NET primitive type such as int, bool, double, string, GUID, DateTime, decimal or any other type that can be converted from string type then it sets the value of a parameter from the query string.
+And if the parameter type is complex type then Web API tries to get the value from request body by default.
+
+Web API will extract the JSON object from the Request body above and convert it into Student object automatically because names of JSON object properties matches with the name of Student class properties (case-insensitive).
+The above Post method includes both primitive and complex type parameter. So, by default , Web API will get the id parameter from query string and student parameter from the request body.
+Post action method cannot include multiple complex type parameters because at most one parameter is allowed to be read from the request body.
+
+
+
+
+
+
+
 
 
 
