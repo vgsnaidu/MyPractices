@@ -199,9 +199,22 @@ But, what if we want to change this default behaviour?
 
 Use [FromUri] attribute to force Web API to get the value of complex type from the query string and [FromBody] attribute to get the value of primitive type from the request body, opposite to the default rules.
 
+==========
+--------------------------------------------
+Action Method Return Type ::
+In the previous section, you learned about parameter binding with Web API action method. 
+Here, you will learn about the return types of action methods which in turn will be embedded in the Web API response sent to the client.
 
+The Web API action method can have following return types:=
 
+Void
+Primitive type or Complex type
+HttpResponseMessage
+IHttpActionResult
 
+------------------------
+Web API controller always returns an object of HttpResponseMessage to the hosting infrastructure. The following figure illustrates the overall Web API request/response pipeline.
+https://www.asp.net/media/4071077/aspnet-web-api-poster.pdf
 
 
 
